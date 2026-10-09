@@ -1,5 +1,6 @@
 from fractions import Fraction
 
+
 def factorial(number):
     if not isinstance(number, int):
         return "Please enter an integer as the factorial"
@@ -15,6 +16,7 @@ def factorial(number):
 
     return result
 
+
 print("""Welcome to the binomial expansion calculator. 
 
 The calculator is designed to give approximations to irrational numbers to a degree of accuracy that you choose.
@@ -27,11 +29,30 @@ Powers that are recurring numbers such as 1/3 will always be approximated to 15 
 There are always at least two terms, 1 and nx.
 """)
 
-base = float(input("What is the base:"))
-n = float(Fraction(input("What is the power:")))
-accuracy = int(input("How many terms would you like (minimum:2):"))
+def binomialexpansion():
+    base = input("What is the base:")
+    while not isinstance(base, int):
+        if base.isdigit():
+            base = int(base)
+        else:
+            print("Please enter an integer")
+            base = input("What is the base:")
 
-def binomialexpansion(base, n):
+    n = input("What is the exponent:")
+    while not isinstance(n, int):
+        if n.isdigit():
+            n = int(Fraction((n)))
+        else:
+            print("Please enter an integer")
+            n = input("What is the exponent:")
+
+    accuracy = input("How many terms would you like (minimum:2):")
+    while not isinstance(accuracy, int):
+        if accuracy.isdigit():
+            accuracy = int(accuracy)
+        else:
+            print("Please enter an integer")
+            accuracy = input("How many terms would you like (minimum:2):")
 
     if n >= 1 and n <= -1:
         return "The power must be a fraction between 0 and 1"
@@ -53,7 +74,6 @@ def binomialexpansion(base, n):
     term = numerator / denominator
 
     for i in range(2, accuracy):
-
         series += (term * (x ** iterated_power))
 
         iterated_number -= 1
@@ -67,4 +87,5 @@ def binomialexpansion(base, n):
 
     return str(series)
 
-print(binomialexpansion(base, n))
+
+print(binomialexpansion())
