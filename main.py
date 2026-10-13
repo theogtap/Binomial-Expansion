@@ -30,9 +30,19 @@ The maximum number of terms that you can select is 160.
 Powers that are recurring numbers such as 1/3 will always be truncated to 16 decimal places by default.
 
 The estimated error is the value of the next 10 terms of the expansion.
-The estimated error may be in scientific notation form, xe-y. The e is a constant, 10. e-y means 10^-y, and you multiply this value by x, so xe-y means x multiplied by 10^-y.
+
+The percentage error indicates how far your approximation differs from Python's stored value, expressed as a percentage.
+Negative percentage error: Your approximation is smaller than Python's stored value.
+Positive percentage error: Your approximation is larger than Python's stored value.
+Zero percentage error: Your approximation matches Python's stored value to the precision used in the comparison.
+The magnitude of the percentage indicates the size of the difference relative to Python's stored value
+
+Error values may be in scientific notation form, xe-y. The e is a constant, 10. e-y means 10^-y, and you multiply this value by x, so xe-y means x multiplied by 10^-y.
+
 
 """)
+
+# Verification
 
 base = None
 n = None
@@ -72,7 +82,7 @@ def binomialexpansion(base, n):
         return "The power must be a fraction between -1 and 1"
 
     if base <= 0:
-        return "The base must be a positive value"
+        return "The base must be a positive non-zero value"
 
     if accuracy < 2:
         return "The minimum number of terms is 2"
@@ -80,11 +90,15 @@ def binomialexpansion(base, n):
     if accuracy > 160:
         return "The maximum number of terms is 160"
 
+    #Scaling loop
+
+    base_scale = base
+
     count = 0
 
-    while base > 2:
+    while base_scale > 2:
 
-        base /= 4
+        base_scale /= 4
 
         count += 1
 
@@ -92,7 +106,9 @@ def binomialexpansion(base, n):
 
     multiplier = 4 ** multiplier_power
 
-    x = base - 1
+    #Binomial expansion loop
+
+    x = base_scale - 1
 
     series = 1 + (n * x)
 
@@ -118,6 +134,8 @@ def binomialexpansion(base, n):
 
         term = numerator / denominator
 
+    #Expanding the series further to find error
+
     series_for_error = series
 
     for i in range(accuracy, accuracy + 10):
@@ -135,17 +153,25 @@ def binomialexpansion(base, n):
 
     series *= multiplier
 
+    #calculating estimated error
+
     series_for_error *= multiplier
 
     estimated_error = abs(series_for_error - series)
+
+    #calculating percentage error
+
+    percentage_error = ((series - (base ** n)) / (base ** n)) * 100
 
     print(f"The approximated value for {base} ^ {n} is:",str(series))
 
     print(f"The estimated error for your value is {estimated_error}")
 
+    print(f"The percentage error when compared with python's stored value for {base} ^ {n} is {percentage_error}")
+
 binomialexpansion(base, n)
 
-#Goal: to create a system for accuracy by using python placeholder values as reference
+#Goal 2: to add a system involving the scaling loop that attempts to convert the base into a value as close to 1 as possible before expanding it.
 
-#The current expansion loses convergence speed as base tends to 0
+#The current expansion loses convergence speed as base tends 0 or 2, and it gains convergence speed as it tends to 1.
 
