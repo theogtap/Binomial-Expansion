@@ -1,3 +1,4 @@
+
 from fractions import Fraction
 
 def factorial(number):
@@ -25,14 +26,43 @@ Enter a fractional power between -1 and 1, enter the amount of terms you'd like 
 Powers that are recurring numbers such as 1/3 will always be approximated to 15 decimals places by default.
 
 There are always at least two terms, 1 and nx.
+The maximum number of terms that you can select is 169
 
-You may receive certain values in scientific notation. For example, 5e-16. e-16 means 10^-16, and you multiply that by the number in front. In this case, 5.
+You may receive values for your maximum error in scientific notation. For example, 5e-16. e-16 means 10^-16, and you multiply that by the number in front. In this case, 5. So 5e-16 = 5 x 10^-16.
 
 """)
 
-base = float(Fraction(input("What is the base:")))
-n = float(Fraction(input("What is the power:")))
-accuracy = int(input("How many terms would you like (minimum:2):"))
+base = None
+n = None
+accuracy = None
+
+while base == None:
+
+    try:
+
+        base = float(Fraction(input("What is the base:")))
+
+    except (ValueError, ZeroDivisionError):
+
+        print("Please enter an integer, decimal or fraction as the base.")
+
+while n == None:
+
+    try:
+        n = float(Fraction(input("What is the power:")))
+
+    except (ValueError, ZeroDivisionError):
+
+        print("Please enter a decimal or fraction as the power")
+
+while accuracy == None:
+
+    try:
+        accuracy = int(input("How many terms would you like (minimum:2):"))
+
+    except (ValueError , ZeroDivisionError):
+
+        print("Please enter an integer as the number of terms you would like")
 
 def binomialexpansion(base, n):
 
@@ -86,16 +116,6 @@ def binomialexpansion(base, n):
     series *= multiplier
 
     print(f"The approximated value for {base} ^ {Fraction(n)} is:",str(series))
-
-#The code underneath is for calculating maximum error
-
-    series_list = list(str(series))
-
-    decimal_points_count = len(series_list[2:])
-
-    max_error = 0.5 * (10 ** -(decimal_points_count))
-
-    print("The maximum error is:",(max_error))
 
 binomialexpansion(base, n)
 
