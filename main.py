@@ -16,19 +16,21 @@ def factorial(number):
 
    return result
 
-print("""Welcome to the binomial expansion calculator.
+print("""
+Welcome to the binomial expansion calculator. Please read below for information on how to use the calculator.
 
 The calculator is designed to give approximations to irrational numbers to a degree of accuracy that you choose.
 
-Enter a fractional power between -1 and 1, enter the amount of terms you'd like involved in your approximated expansion
+Enter a fractional power in the form x/y where x is the numerator and y is the denominator between -1 and 1, enter the amount of terms you'd like involved in your approximated expansion
 (The more terms, the more accurate your approximation will be), and enter a non-zero positive base.
 
-Powers that are recurring numbers such as 1/3 will always be approximated to 15 decimals places by default.
-
 There are always at least two terms, 1 and nx.
-The maximum number of terms that you can select is 169
+The maximum number of terms that you can select is 160.
 
-You may receive values for your maximum error in scientific notation. For example, 5e-16. e-16 means 10^-16, and you multiply that by the number in front. In this case, 5. So 5e-16 = 5 x 10^-16.
+Powers that are recurring numbers such as 1/3 will always be truncated to 16 decimal places by default.
+
+The estimated error is the value of the next 10 terms of the expansion.
+The estimated error may be in scientific notation form, xe-y. The e is a constant, 10. e-y means 10^-y, and you multiply this value by x, so xe-y means x multiplied by 10^-y.
 
 """)
 
@@ -75,6 +77,9 @@ def binomialexpansion(base, n):
     if accuracy < 2:
         return "The minimum number of terms is 2"
 
+    if accuracy > 160:
+        return "The maximum number of terms is 160"
+
     count = 0
 
     while base > 2:
@@ -113,13 +118,34 @@ def binomialexpansion(base, n):
 
         term = numerator / denominator
 
+    series_for_error = series
+
+    for i in range(accuracy, accuracy + 10):
+
+        series_for_error += (term * (x ** iterated_power))
+
+        iterated_number -= 1
+        iterated_factorial += 1
+        iterated_power += 1
+
+        numerator *= (n + iterated_number)
+        denominator = factorial(iterated_factorial)
+
+        term = numerator / denominator
+
     series *= multiplier
 
-    print(f"The approximated value for {base} ^ {Fraction(n)} is:",str(series))
+    series_for_error *= multiplier
+
+    estimated_error = abs(series_for_error - series)
+
+    print(f"The approximated value for {base} ^ {n} is:",str(series))
+
+    print(f"The estimated error for your value is {estimated_error}")
 
 binomialexpansion(base, n)
 
-#Goal: to make accuracy measurable by calculating error and creating a system for accuracy
+#Goal: to create a system for accuracy by using python placeholder values as reference
 
 #The current expansion loses convergence speed as base tends to 0
 
