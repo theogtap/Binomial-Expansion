@@ -25,6 +25,9 @@ Enter a fractional power between -1 and 1, enter the amount of terms you'd like 
 Powers that are recurring numbers such as 1/3 will always be approximated to 15 decimals places by default.
 
 There are always at least two terms, 1 and nx.
+
+You may receive certain values in scientific notation. For example, 5e-16. e-16 means 10^-16, and you multiply that by the number in front. In this case, 5.
+
 """)
 
 base = float(Fraction(input("What is the base:")))
@@ -82,15 +85,21 @@ def binomialexpansion(base, n):
 
     series *= multiplier
 
-    return str(series)
+    print(f"The approximated value for {base} ^ {Fraction(n)} is:",str(series))
 
-print(binomialexpansion(base, n))
+#The code underneath is for calculating maximum error
 
-#Goal: to make accuracy measurable.
+    series_list = list(str(series))
+
+    decimal_points_count = len(series_list[2:])
+
+    max_error = 0.5 * (10 ** -(decimal_points_count))
+
+    print("The maximum error is:",(max_error))
+
+binomialexpansion(base, n)
+
+#Goal: to make accuracy measurable by calculating error and creating a system for accuracy
 
 #The current expansion loses convergence speed as base tends to 0
 
-#Iterating the factorial causes an overflow error for large numbers of terms. Find a way to create the next term based on the previous one rather than iterating so much.
-
-#Maybe I should consider using the binomialexpansion function for irrational powers such as 1/3? It would give me an
-#approximation rather than a stored decimal value. At the same time, it could make the expansion less accurate,
