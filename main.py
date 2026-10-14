@@ -35,68 +35,49 @@ The estimated error is the value of the next 10 terms of the expansion.
 The percentage error indicates how far your approximation differs from Python's stored value, expressed as a percentage.
 Negative percentage error: Your approximation is smaller than Python's stored value.
 Positive percentage error: Your approximation is larger than Python's stored value.
+Zero percentage error: Your approximation is exactly the same as Python's stored value.
 The magnitude of the percentage indicates the size of the difference relative to Python's stored value
 
 Error values may be in scientific notation form, xe-y. The e is a constant, 10. e-y means 10^-y, and you multiply this value by x, so xe-y means x multiplied by 10^-y.
 
-If you get a value of 0 for your estimated error, it is because the value for the estimated error is smaller than python's standard floating-point precision.
-If you get a value of 0 for your percentage error, it is because the difference between pythons value and the approximated value is smaller than python's standard floating-point precision.
-
-#Explanation of convergence speed
-
-Convergence speed may vary depending on the base that you pick. What this means is that the series converges quicker for some bases compared to others, so you may find some expansions to be more accurate/gain accuracy quicker than others.
-
 """)
-
-#Error system explanation
 
 # Verification
 
 base = None
-n = None
-accuracy = None
-
 while base == None:
-
     try:
-
-        base = float(Fraction(input("What is the base:")))
-
+        base = float(Fraction(input("What is the base: ")))
+        if base <= 0:
+            print("The base must be a positive non-zero value. Please try again.")
+            base = None  # Reset so it repeats the loop
     except (ValueError, ZeroDivisionError):
-
         print("Please enter an integer, decimal or fraction as the base.")
 
+n = None
 while n == None:
-
     try:
-        n = float(Fraction(input("What is the power:")))
-
+        n = float(Fraction(input("What is the power: ")))
+        if n >= 1 or n <= -1:
+            print("The power must be a fraction between -1 and 1. Please try again.")
+            n = None  # Reset so it repeats the loop
     except (ValueError, ZeroDivisionError):
+        print("Please enter a decimal or fraction as the power.")
 
-        print("Please enter a decimal or fraction as the power")
-
+accuracy = None
 while accuracy == None:
-
     try:
-        accuracy = int(input("How many terms would you like (minimum:2):"))
-
-    except (ValueError , ZeroDivisionError):
-
-        print("Please enter an integer as the number of terms you would like")
+        accuracy = int(input("How many terms would you like (minimum: 2, maximum: 160): "))
+        if accuracy < 2:
+            print("The minimum number of terms is 2. Please try again.")
+            accuracy = None
+        elif accuracy > 160:
+            print("The maximum number of terms is 160. Please try again.")
+            accuracy = None
+    except (ValueError, ZeroDivisionError):
+        print("Please enter an integer as the number of terms you would like.")
 
 def binomialexpansion(base, n):
-
-    if n >= 1 or n <= -1:
-        return "The power must be a fraction between -1 and 1"
-
-    if base <= 0:
-        return "The base must be a positive non-zero value"
-
-    if accuracy < 2:
-        return "The minimum number of terms is 2"
-
-    if accuracy > 160:
-        return "The maximum number of terms is 160"
 
     #Scaling loop part 1
 
@@ -104,13 +85,13 @@ def binomialexpansion(base, n):
 
     count = 0
 
-    while base_scaled > 2:
+    while base_scaled >= 2:
 
         base_scaled /= 4
 
         count += 1
 
-#Scaling loop part 2
+#Scaling loop part 2 ~ Fix what chat told you about
 
     interval_set = {base_scaled}
 
@@ -138,8 +119,11 @@ def binomialexpansion(base, n):
 
                 break
 
-        if scaling_complete == True:
+            elif base_scaled == 1:
+                scaling_complete = True
+                break
 
+        if scaling_complete == True:
             break
 
         while base_scaled > 1:
@@ -158,6 +142,10 @@ def binomialexpansion(base, n):
 
                 scaling_complete = True
 
+                break
+
+            elif base_scaled == 1:
+                scaling_complete = True
                 break
 
      #End of scaling loop
@@ -227,12 +215,23 @@ def binomialexpansion(base, n):
 
     print(f"The approximated value for {base} ^ {n} is:",str(series))
 
-    print(f"The estimated error for your value is {estimated_error}")
+    if estimated_error != 0:
+        print(f"The estimated error for your value is {estimated_error}")
 
-    print(f"The percentage error when compared with python's stored value for {base} ^ {n} is {percentage_error}")
+    else:
+        print("The calculated difference between the two sums is zero at python's standard floating-point precision. Therefore the estimated error cannot be calculated")
+
+    if percentage_error != 0:
+        print(f"The percentage error when compared with python's stored value for {base} ^ {n} is {percentage_error}")
+
+    elif series == python_value:
+        print(f"The percentage error when compared with python's stored value for {base} ^ {n} is 0. Therefore, the approximated value is the same as python's stored value")
+
+    elif (series - python_value) == 0:
+        print(f"The calculated difference between the approximated value and python's stored value for {base} ^ {n} is smaller than python's floating-point precision limit and therefore percentage error cannot be represented")
 
 binomialexpansion(base, n)
 
-#Goal 2: to add a system involving the scaling loop that attempts to convert the base into a value as close to 1 as possible before expanding it, maximizing convergence speed.
+#Goal 4: fix all the issues chat is talking about, primarily the second part of the scaling loop needs some reworking.
 
 #The current expansion loses convergence speed as base tends 0 or 2, and it gains convergence speed as it tends to 1.
