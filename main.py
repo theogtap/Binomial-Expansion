@@ -1,4 +1,3 @@
-
 from fractions import Fraction
 
 def factorial(number):
@@ -29,18 +28,27 @@ The maximum number of terms that you can select is 160.
 
 Powers that are recurring numbers such as 1/3 will always be truncated to 16 decimal places by default.
 
+#Explanation of error system
+
 The estimated error is the value of the next 10 terms of the expansion.
 
 The percentage error indicates how far your approximation differs from Python's stored value, expressed as a percentage.
 Negative percentage error: Your approximation is smaller than Python's stored value.
 Positive percentage error: Your approximation is larger than Python's stored value.
-Zero percentage error: Your approximation matches Python's stored value to the precision used in the comparison.
 The magnitude of the percentage indicates the size of the difference relative to Python's stored value
 
 Error values may be in scientific notation form, xe-y. The e is a constant, 10. e-y means 10^-y, and you multiply this value by x, so xe-y means x multiplied by 10^-y.
 
+If you get a value of 0 for your estimated error, it is because the value for the estimated error is smaller than python's standard floating-point precision.
+If you get a value of 0 for your percentage error, it is because the difference between pythons value and the approximated value is smaller than python's standard floating-point precision.
+
+#Explanation of convergence speed
+
+Convergence speed may vary depending on the base that you pick. What this means is that the series converges quicker for some bases compared to others, so you may find some expansions to be more accurate/gain accuracy quicker than others.
 
 """)
+
+#Error system explanation
 
 # Verification
 
@@ -90,17 +98,69 @@ def binomialexpansion(base, n):
     if accuracy > 160:
         return "The maximum number of terms is 160"
 
-    #Scaling loop
+    #Scaling loop part 1
 
-    base_scale = base
+    base_scaled = base
 
     count = 0
 
-    while base_scale > 2:
+    while base_scaled > 2:
 
-        base_scale /= 4
+        base_scaled /= 4
 
         count += 1
+
+#Scaling loop part 2
+
+    interval_set = {base_scaled}
+
+    interval_list = [base_scaled]
+
+    scaling_complete = False
+
+    while not scaling_complete:
+
+        while base_scaled < 1:
+
+            base_scaled *= 4
+
+            count -= 1
+
+            interval_set.add(base_scaled)
+
+            interval_list.append(base_scaled)
+
+            if len(interval_list) != len(interval_set):
+
+                base_scaled = min(interval_set, key=lambda x: abs(x - 1))
+
+                scaling_complete = True
+
+                break
+
+        if scaling_complete == True:
+
+            break
+
+        while base_scaled > 1:
+
+            base_scaled /= 4
+
+            count += 1
+
+            interval_set.add(base_scaled)
+
+            interval_list.append(base_scaled)
+
+            if len(interval_list) != len(interval_set):
+
+                base_scaled = min(interval_set, key=lambda x: abs(x - 1))
+
+                scaling_complete = True
+
+                break
+
+     #End of scaling loop
 
     multiplier_power = n * count
 
@@ -108,7 +168,7 @@ def binomialexpansion(base, n):
 
     #Binomial expansion loop
 
-    x = base_scale - 1
+    x = base_scaled - 1
 
     series = 1 + (n * x)
 
@@ -161,7 +221,9 @@ def binomialexpansion(base, n):
 
     #calculating percentage error
 
-    percentage_error = ((series - (base ** n)) / (base ** n)) * 100
+    python_value = base ** n
+
+    percentage_error = ((series - python_value) / (python_value)) * 100
 
     print(f"The approximated value for {base} ^ {n} is:",str(series))
 
@@ -171,7 +233,6 @@ def binomialexpansion(base, n):
 
 binomialexpansion(base, n)
 
-#Goal 2: to add a system involving the scaling loop that attempts to convert the base into a value as close to 1 as possible before expanding it.
+#Goal 2: to add a system involving the scaling loop that attempts to convert the base into a value as close to 1 as possible before expanding it, maximizing convergence speed.
 
 #The current expansion loses convergence speed as base tends 0 or 2, and it gains convergence speed as it tends to 1.
-
